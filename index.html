@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self' https://fonts.gstatic.com;
-      script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
-      style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
-      connect-src 'self' https://*.cbsivideo.com https://cdnjs.cloudflare.com;
+      script-src 'self' 'unsafe-inline' https://ajax.googleapis.com;
+      style-src 'self' 'unsafe-inline' https://ajax.googleapis.com;
+      connect-src 'self' https://*.cbsivideo.com https://ajax.googleapis.com;
+      img-src 'self' data:;
       media-src 'self' blob:;
   ">
     <title>DSPORTS</title>
     
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/controls.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/shaka-player/5.1.8/controls.css">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/shaka-player/5.1.8/shaka-player.ui.js"></script>
 
     <style>
         body {
@@ -105,7 +106,7 @@
         };
 
         let player;
-        let ui;
+        let videoContainer;
         const statusDiv = document.getElementById('status');
         const buttons = document.querySelectorAll('.channel-btn');
 
@@ -119,48 +120,47 @@
         }
 
         async function initPlayer() {
-            const videoContainer = document.querySelector('[data-shaka-player-container]');
+            videoContainer = document.querySelector('[data-shaka-player-container]');
             const video = document.querySelector('[data-shaka-player]');
-            
-            player = new shaka.Player(video);
-            /*
-            ui = new shaka.ui.Overlay(player, videoContainer, video);
-            
-            const uiConfig = {
+            const ui = video['ui'];
+            const controls = ui.getControls();
+            player = controls.getPlayer();
+
+            const config = {
                 'controlPanelElements': [
-                    'play_pause', 
-                    'live', 
-                    'spacer', 
-                    'mute', 
-                    'volume', 
-                    'quality',      
-                    'statistics',   
-                    'fullscreen'
+                    'play_pause',
+                    'time_and_duration',
+                    'mute',
+                    'volume',
+                    'spacer',
+                    'quality',
+                    'fullscreen',
                 ],
-            };
-            ui.configure(uiConfig);
-            */
+                'customContextMenu' : true, 
+                'contextMenuElements' : [
+                    'statistics',
+                    'save_video_frame',
+                ],
+                'statisticsList' : [
+                    'width',
+                    'height',
+                    'currentCodecs',
+                    'estimatedBandwidth',
+                    'streamBandwidth',
+                    'liveLatency',
+                    'bufferingTime',
+                    'stallsDetected',
+                ],
+            }
+            ui.configure(config);
 
             player.configure({
                 streaming: {
-                    // Reduce el tamaño del buffer que el reproductor mantiene en memoria.
-                    // Almacena solo entre 1.5 y 3 segundos de video para evitar retrasarse.
-                    rebufferingGoal: 1.5,
-                    bufferingGoal: 3,
-                    
-                    // Obliga al reproductor a sintonizar la transmisión lo más cerca posible del directo absoluto.
-                    // Si el manifiesto del servidor lo permite, intentará acoplarse a 1.5 segundos del directo.
-                    durationWithLiveEdge: 1.5,
-                    
-                    // Configuración para que el salto inicial persiga inmediatamente el último fragmento subido
-                    inaccurateManifestTolerance: 0,
-                    
-                    // Si por un bajón de internet el reproductor se retrasa más de 4 segundos del directo,
-                    // Shaka forzará un micro-salto temporal hacia adelante para recuperar el tiempo real automáticamente.
-                    maxLiveInterruptionDelay: 4
-                }
+                    bufferingGoal: 16,
+                    bufferBehind: 10,
+                },
             });
-
+            
             player.addEventListener('error', onPlayerErrorEvent);
 
             buttons.forEach(btn => {
@@ -170,7 +170,7 @@
                     loadChannel(e.target.dataset.id);
                 });
             });
-
+            loadChannel('dsports')
         }
 
         async function loadChannel(channelId) {
