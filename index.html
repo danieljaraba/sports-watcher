@@ -68,6 +68,38 @@
                 font-size: 14px;
                 color: #aaaaaa;
             }
+
+            .video-container.theater-mode {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw !important;
+                height: calc(100vh - 80px);
+                max-width: none;
+                border-radius: 0;
+                z-index: 1000;
+            }
+            
+            .video-container.theater-mode video {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+            
+            .controls.theater-controls {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(18,18,18,0.95);
+                padding: 10px;
+                z-index: 1001;
+                justify-content: center;
+            }
+            
+            body.theater-body {
+                overflow: hidden;
+            }
         </style>
     </head>
     <body>
@@ -81,6 +113,8 @@
             <button class="channel-btn active" data-id="dsports">DSPORTS</button>
             <button class="channel-btn" data-id="dsports2">DSPORTS 2</button>
             <button class="channel-btn" data-id="dsportsPlus">DSPORTS +</button>
+
+            <button id="theaterBtn">🎭 Modo Teatro</button>
         </div>
 
         <div id="status"></div>
@@ -111,6 +145,23 @@
             let videoContainer;
             const statusDiv = document.getElementById('status');
             const buttons = document.querySelectorAll('.channel-btn');
+
+            const theaterBtn = document.getElementById('theaterBtn');
+            const controlsDiv = document.querySelector('.controls');
+            
+            let theaterMode = false;
+            
+            theaterBtn.addEventListener('click', () => {
+                theaterMode = !theaterMode;
+            
+                videoContainer.classList.toggle('theater-mode', theaterMode);
+                controlsDiv.classList.toggle('theater-controls', theaterMode);
+                document.body.classList.toggle('theater-body', theaterMode);
+            
+                theaterBtn.textContent = theaterMode
+                    ? '↙ Salir Teatro'
+                    : '🎭 Modo Teatro';
+            });
 
 
             async function initApp() {
