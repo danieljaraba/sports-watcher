@@ -7,7 +7,7 @@
             default-src 'self' https://fonts.gstatic.com;
             script-src 'self' 'unsafe-inline' https://ajax.googleapis.com;
             style-src 'self' 'unsafe-inline' https://ajax.googleapis.com;
-            connect-src 'self' https://*.cbsivideo.com https://ajax.googleapis.com https://*.vivocdn.xyz;
+            connect-src 'self' https://*.cbsivideo.com https://ajax.googleapis.com;
             img-src 'self' data: https://www.directvla.com;
             media-src 'self' blob:;
         ">
@@ -81,7 +81,6 @@
             <button class="channel-btn active" data-id="dsports">DSPORTS</button>
             <button class="channel-btn" data-id="dsports2">DSPORTS 2</button>
             <button class="channel-btn" data-id="dsportsPlus">DSPORTS +</button>
-            <button class="channel-btn" data-id="fox">FOX (4K)</button>
         </div>
 
         <div id="status"></div>
@@ -105,10 +104,6 @@
                     manifest: "https://prope9660ag6.airspace-cdn.cbsivideo.com/out/v1/a634dbd5b8474f38b38a8ce37dd77b50/manifest.mpd",
                     keyId: "41121cea7a3d49a78c9496d1b0d919e4",
                     key: "de048d4c2870b8d53961aaeac1804947"
-                },
-                fox: {
-                    name: "FOX",
-                    manifest: "https://nl-081-v1.vivocdn.xyz/1781474919/b1a3f5029d4c4e829a30e6d08901ee85/rG2-IvMkzw9ihzSroICdfP7Bps4lCPpiZ5MCqdSP3Yk/fox4k-usa.m3u8",
                 }
             };
 
@@ -116,6 +111,7 @@
             let videoContainer;
             const statusDiv = document.getElementById('status');
             const buttons = document.querySelectorAll('.channel-btn');
+
 
             async function initApp() {
                 shaka.polyfill.installAll();
